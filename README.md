@@ -50,4 +50,4 @@ It prints:
 InsertNumber insert the number in the specific cell and clears that number from all other cells in the same row, same column and the same square. ```solve()``` tries to find the cell with minimum contended number. Then tries to insert sequentially each of numbers and tries to solve sudoku (recursively). When the correct combination found, it stops.   
 
 ### Performance consideration
-To check if a cell is complete (only one bit is 1) the function calls c++20 ```std::popcount``` which is likely translated ins assembly instruction avoiding loops. The same approach is used to determine the position of bit one, in this case is called ```std::countr_zero```. 
+To check if a cell is complete (only one bit is 1) the function calls c++20 ```std::popcount``` which is likely translated in assembly instruction avoiding loops. The same approach is used to determine the position of bit one, in this case is called ```std::countr_zero```. 
