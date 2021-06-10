@@ -21,7 +21,7 @@ static constexpr auto empty_field = []() {
 #define CLEAR_VALUE(n, pos) ((n) &= ~(1 << (pos)))
 
 static constexpr auto get_number_fast = [](value_type n) {
-  return sizeof(value_type) * 8 - std::countl_zero(value_type(n >> 1));
+  return std::countr_zero(value_type(n));
 };
 
 static constexpr auto get_number = [](value_type n) {
