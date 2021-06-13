@@ -1,8 +1,8 @@
 #include <iostream>
-#include <bit>
 #include <bitset>
 #include <array>
 #include <chrono>
+#include "bit_functions.h"
 
 static constexpr size_t sudoku_squares_in_row = 3;
 static constexpr size_t sudoku_size = sudoku_squares_in_row * sudoku_squares_in_row;
@@ -21,11 +21,11 @@ static constexpr auto empty_field = []() {
 #define CLEAR_VALUE(n, pos) ((n) &= ~(1 << (pos)))
 
 static constexpr auto get_number_fast = [](value_type n) {
-  return std::countr_zero(value_type(n));
+  return BIT_POS(n);
 };
 
 static constexpr auto get_number = [](value_type n) {
-  return std::popcount(n) == 1 ? get_number_fast(n) : 0;
+  return BIT_COUNT(n) == 1 ? get_number_fast(n) : 0;
 };
 
 static constexpr auto get_square_index_by_pos = [](size_t pos_x, size_t pos_y) {
@@ -69,10 +69,10 @@ struct Field {
   void remove_from_row(value_type value, size_t row) {
     for (size_t c = 0; c < sudoku_size; ++c) {
       const size_t pos = row * sudoku_size + c;
-      if (std::popcount(field[pos]) > 1) {
+      if (BIT_COUNT(field[pos]) > 1) {
         CLEAR_VALUE(field[pos], value);
         // remove other if needed
-        if (std::popcount(field[pos]) == 1) {
+        if (BIT_COUNT(field[pos]) == 1) {
           auto num = get_number_fast(field[pos]);
           InsertNumber(num, c, row);
         }
@@ -82,10 +82,10 @@ struct Field {
   void remove_from_col(value_type value, size_t col) {
     for (size_t r = 0; r < sudoku_size; ++r) {
       size_t pos = r * sudoku_size + col;
-      if (std::popcount(field[pos]) > 1) {
+      if (BIT_COUNT(field[pos]) > 1) {
         CLEAR_VALUE(field[pos], value);
         // remove other if needed
-        if (std::popcount(field[pos]) == 1) {
+        if (BIT_COUNT(field[pos]) == 1) {
           auto num = get_number_fast(field[pos]);
           InsertNumber(num, col, r);
         }
@@ -94,10 +94,10 @@ struct Field {
   }
   void remove_from_square(value_type value, size_t square_index) {
     for (const auto& pos : square_indexes[square_index]) {
-      if (std::popcount(field[pos]) > 1) {
+      if (BIT_COUNT(field[pos]) > 1) {
         CLEAR_VALUE(field[pos], value);
         // remove other if needed
-        if (std::popcount(field[pos]) == 1) {
+        if (BIT_COUNT(field[pos]) == 1) {
           auto num = get_number_fast(field[pos]);
           InsertNumber(num, pos % sudoku_size, pos / sudoku_size);
         }
@@ -147,7 +147,7 @@ struct Field {
   }
   bool is_solved() const {
     for (const auto& item : field) {
-      if (std::popcount(item) != 1) {
+      if (BIT_COUNT(item) != 1) {
         return false;
       }
     }
@@ -160,7 +160,7 @@ struct Field {
     auto min_it = field.begin();
     size_t min_val = sudoku_size;
     for (auto it = field.begin(); it != field.end(); ++it) {
-      auto cur_val = std::popcount(*it);
+      auto cur_val = BIT_COUNT(*it);
       if (cur_val > 1 && cur_val < min_val) {
         min_val = cur_val;
         min_it = it;
@@ -218,7 +218,7 @@ static constexpr auto sudoku2 = []() {
 int main() {
   Field field;
   auto start_ts = std::chrono::system_clock::now();
-  field.Parse(sudoku2);
+  field.Parse(hardest_sudoku);
   if (field.solve()) {
     auto end_ts = std::chrono::system_clock::now();
     field.print_as_table();
