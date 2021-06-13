@@ -1,9 +1,9 @@
 ## Sudoku solver project
 This project helps to solve sudoku in the fastest way. 
 ### How to use:
-1. Create Field structure
+1. Create SudokuField structure
 ```c++
-Field field;
+SudokuField field;
 ```
 2. Insert each known numbers using ```InsertNumber()``` method or call ```Parse()``` forwarding the entire schema
 ```c++
