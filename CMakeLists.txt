@@ -3,4 +3,4 @@ project(sudoku_solver)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(sudoku_solver main.cpp bit_functions.h SudokuField.h)
+add_executable(sudoku_solver main.cpp bit_functions.h SudokuField.h connected_positions.h utility.h)

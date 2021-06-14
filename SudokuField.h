@@ -8,103 +8,24 @@
 #include <array>
 #include <bitset>
 #include "bit_functions.h"
-
-static constexpr size_t sudoku_squares_in_row = 3;
-static constexpr size_t sudoku_size = sudoku_squares_in_row * sudoku_squares_in_row;
-
-using value_type = uint16_t;
-using field_type = std::array<value_type, sudoku_size * sudoku_size>;
-
-static constexpr auto empty_field = []() {
-  field_type ar{};
-  for (auto& item : ar) {
-    item = (1 << (sudoku_size + 1)) - 2;
-  }
-  return ar;
-};
-
-#define CLEAR_VALUE(n, pos) ((n) &= ~(1 << (pos)))
-
-static constexpr auto get_number_fast = [](value_type n) {
-  return BIT_POS(n);
-};
-
-static constexpr auto get_number = [](value_type n) {
-  return BIT_COUNT(n) == 1 ? get_number_fast(n) : 0;
-};
-
-static constexpr auto get_square_index_by_pos = [](size_t pos_x, size_t pos_y) {
-  return pos_y / sudoku_squares_in_row * sudoku_squares_in_row + pos_x / sudoku_squares_in_row;
-};
-
-static constexpr auto get_square_content = [](size_t index) {
-  std::array<value_type, sudoku_size> ar{};
-  auto idx = 0;
-  auto r_start = index / sudoku_squares_in_row * sudoku_squares_in_row;
-  auto c_start = (index % sudoku_squares_in_row) * sudoku_squares_in_row;
-  for (size_t r = r_start; r < r_start + sudoku_squares_in_row; ++r) {
-    for (size_t c = c_start; c < c_start + sudoku_squares_in_row; ++c) {
-      ar[idx++] = r * sudoku_size + c;
-    }
-  }
-  return ar;
-};
-
-template<size_t... Indices>
-static constexpr auto generate_squares_array(std::integer_sequence<size_t, Indices...>) {
-  return std::array{ get_square_content(size_t(Indices))... };
-}
-
-static constexpr auto square_content = []() {
-  return generate_squares_array(std::make_index_sequence<sudoku_size>{});
-};
-
-static constexpr auto square_indexes = square_content();
+#include "utility.h"
+#include "connected_positions.h"
 
 struct SudokuField {
-  SudokuField() : field(empty_field()) {
+  SudokuField()
+      : field(empty_field()) {
   }
   void InsertNumber(value_type n, size_t pos_x, size_t pos_y) {
     // set value
     field[pos_y * sudoku_size + pos_x] = (1 << n);
-    remove_from_row(n, pos_y);
-    remove_from_col(n, pos_x);
-    remove_from_square(n, get_square_index_by_pos(pos_x, pos_y));
-  }
-  void remove_from_row(value_type value, size_t row) {
-    for (size_t c = 0; c < sudoku_size; ++c) {
-      const size_t pos = row * sudoku_size + c;
+    for (const auto&[row, col] : connected_positions[pos_y * sudoku_size + pos_x]) {
+      const size_t pos = row * sudoku_size + col;
       if (BIT_COUNT(field[pos]) > 1) {
-        CLEAR_VALUE(field[pos], value);
+        CLEAR_VALUE(field[pos], n);
         // remove other if needed
         if (BIT_COUNT(field[pos]) == 1) {
           auto num = get_number_fast(field[pos]);
-          InsertNumber(num, c, row);
-        }
-      }
-    }
-  }
-  void remove_from_col(value_type value, size_t col) {
-    for (size_t r = 0; r < sudoku_size; ++r) {
-      size_t pos = r * sudoku_size + col;
-      if (BIT_COUNT(field[pos]) > 1) {
-        CLEAR_VALUE(field[pos], value);
-        // remove other if needed
-        if (BIT_COUNT(field[pos]) == 1) {
-          auto num = get_number_fast(field[pos]);
-          InsertNumber(num, col, r);
-        }
-      }
-    }
-  }
-  void remove_from_square(value_type value, size_t square_index) {
-    for (const auto& pos : square_indexes[square_index]) {
-      if (BIT_COUNT(field[pos]) > 1) {
-        CLEAR_VALUE(field[pos], value);
-        // remove other if needed
-        if (BIT_COUNT(field[pos]) == 1) {
-          auto num = get_number_fast(field[pos]);
-          InsertNumber(num, pos % sudoku_size, pos / sudoku_size);
+          InsertNumber(num, col, row);
         }
       }
     }
@@ -140,14 +61,22 @@ struct SudokuField {
       std::cout << "\n";
     }
   }
-  template<class Type = value_type>
-  void Parse(const std::array<std::array<Type, sudoku_size>, sudoku_size>& param) {
-    for (size_t r = 0; r < sudoku_size; ++r) {
-      for (size_t c = 0; c < sudoku_size; ++c) {
-        if (param[r][c]) {
-          InsertNumber(param[r][c], c, r);
-        }
+  template<class ContainerType>
+  void ParseRow(const ContainerType& container, size_t row) {
+    size_t count = 0;
+    for (const auto& item : container) {
+      if (item) {
+        InsertNumber(item, count, row);
       }
+      ++count;
+    }
+  }
+
+  template<class ContainerType, class Type = value_type>
+  void Parse(const ContainerType& param) {
+    size_t count = 0;
+    for (const auto& row : param) {
+      ParseRow(row, count++);
     }
   }
   [[nodiscard]] bool is_solved() const {

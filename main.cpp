@@ -1,6 +1,8 @@
 #include <iostream>
 #include <chrono>
+#include <vector>
 #include "SudokuField.h"
+#include "connected_positions.h"
 
 static constexpr auto hardest_sudoku = []() {
   return std::array{
@@ -31,9 +33,14 @@ static constexpr auto sudoku2 = []() {
 }();
 
 int main() {
+//  auto cp = connected_positions;
+//  for (const auto& item : cp[58]) {
+//    std::cout << "[ " << item.first << ", " << item.second << " ]\n";
+//  }
+//  return 0;
   SudokuField field;
   auto start_ts = std::chrono::system_clock::now();
-  field.Parse(sudoku2);
+  field.Parse(hardest_sudoku);
   if (field.solve()) {
     auto end_ts = std::chrono::system_clock::now();
     field.print_as_table();
