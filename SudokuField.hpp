@@ -14,7 +14,7 @@
 template<size_t SudokuSize>
 struct SudokuField {
   SudokuField()
-      : field(empty_field()) {
+      : field(empty_field<SudokuSize>()) {
   }
   void InsertNumber(value_type n, size_t pos_x, size_t pos_y) {
     // set value
@@ -93,7 +93,7 @@ struct SudokuField {
       return true;
     }
     auto min_it = field.begin();
-    size_t min_val = sudoku_size;
+    size_t min_val = SudokuSize;
     for (auto it = field.begin(); it != field.end(); ++it) {
       auto cur_val = BIT_COUNT(*it);
       if (cur_val > 1 && cur_val < min_val) {
@@ -105,9 +105,9 @@ struct SudokuField {
       return false;
     }
     auto pos = std::distance(field.begin(), min_it);
-    auto pos_x = pos % sudoku_size;
-    auto pos_y = pos / sudoku_size;
-    for (int i = 1; i <= sudoku_size; ++i) {
+    auto pos_x = pos % SudokuSize;
+    auto pos_y = pos / SudokuSize;
+    for (int i = 1; i <= SudokuSize; ++i) {
       if (*min_it & (1 << i)) {
         auto copy = *this;
         copy.InsertNumber(i, pos_x, pos_y);
@@ -120,6 +120,8 @@ struct SudokuField {
     return false;
   }
   static constexpr auto connected_positions = get_connected_positions<SudokuSize>();
+  static constexpr size_t sudoku_squares_in_row = ct_sqrt(SudokuSize);
+  using field_type = std::array<value_type, SudokuSize * SudokuSize>;
   field_type field;
 };
 

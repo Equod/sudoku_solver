@@ -5,12 +5,7 @@
 #ifndef SUDOKU_SOLVER__UTILITY_HPP_
 #define SUDOKU_SOLVER__UTILITY_HPP_
 
-static constexpr size_t sudoku_squares_in_row = 3;
-static constexpr size_t sudoku_size = sudoku_squares_in_row * sudoku_squares_in_row;
-
 using value_type = uint16_t;
-using field_type = std::array<value_type, sudoku_size * sudoku_size>;
-using additional_field_type = std::array<value_type, sudoku_size>;
 
 template<typename ValueType, size_t... Indices>
 static constexpr auto generate_array_of_value_internal(ValueType Value, std::integer_sequence<size_t, Indices...>) {
@@ -22,16 +17,9 @@ static constexpr auto generate_array_of_value = []() {
   return generate_array_of_value_internal(Value, std::make_index_sequence<N>{});
 };
 
+template<size_t SudokuSize>
 static constexpr auto empty_field = []() {
-  field_type ar{};
-  for (auto& item : ar) {
-    item = (1 << (sudoku_size + 1)) - 2;
-  }
-  return ar;
-};
-
-static constexpr auto additional_empty_value = []() {
-  return (1 << (sudoku_size)) - 1;
+  return generate_array_of_value<(1 << (SudokuSize + 1)) - 2, SudokuSize * SudokuSize>();
 };
 
 #define CLEAR_VALUE(n, pos) ((n) &= ~(1 << (pos)))
