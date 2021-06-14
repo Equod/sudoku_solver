@@ -2,8 +2,8 @@
 // Created by illya on 13/06/21.
 //
 
-#ifndef SUDOKU_SOLVER__BIT_FUNCTIONS_H_
-#define SUDOKU_SOLVER__BIT_FUNCTIONS_H_
+#ifndef SUDOKU_SOLVER__BIT_FUNCTIONS_HPP_
+#define SUDOKU_SOLVER__BIT_FUNCTIONS_HPP_
 
 #if defined(__has_include)
 #if __has_include(<bit>)
@@ -31,4 +31,4 @@
 
 
 
-#endif //SUDOKU_SOLVER__BIT_FUNCTIONS_H_
+#endif //SUDOKU_SOLVER__BIT_FUNCTIONS_HPP_

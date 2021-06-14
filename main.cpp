@@ -1,8 +1,8 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
-#include "SudokuField.h"
-#include "connected_positions.h"
+#include "SudokuField.hpp"
+#include "connected_positions.hpp"
 
 static constexpr auto hardest_sudoku = []() {
   return std::array{

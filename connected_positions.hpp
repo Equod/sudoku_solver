@@ -2,10 +2,10 @@
 // Created by illya on 14/06/21.
 //
 
-#ifndef SUDOKU_SOLVER__CONNECTED_POSITIONS_H_
-#define SUDOKU_SOLVER__CONNECTED_POSITIONS_H_
+#ifndef SUDOKU_SOLVER__CONNECTED_POSITIONS_HPP_
+#define SUDOKU_SOLVER__CONNECTED_POSITIONS_HPP_
 
-#include "utility.h"
+#include "utility.hpp"
 
 using position = std::pair<size_t, size_t>; // { row, col }
 
@@ -40,4 +40,4 @@ static constexpr auto get_connected_positions = []() {
 
 static constexpr auto connected_positions = get_connected_positions();
 
-#endif //SUDOKU_SOLVER__CONNECTED_POSITIONS_H_
+#endif //SUDOKU_SOLVER__CONNECTED_POSITIONS_HPP_

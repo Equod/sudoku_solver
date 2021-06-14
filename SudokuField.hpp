@@ -2,14 +2,14 @@
 // Created by illya on 13/06/21.
 //
 
-#ifndef SUDOKU_SOLVER__SUDOKUFIELD_H_
-#define SUDOKU_SOLVER__SUDOKUFIELD_H_
+#ifndef SUDOKU_SOLVER__SUDOKUFIELD_HPP_
+#define SUDOKU_SOLVER__SUDOKUFIELD_HPP_
 
 #include <array>
 #include <bitset>
-#include "bit_functions.h"
-#include "utility.h"
-#include "connected_positions.h"
+#include "bit_functions.hpp"
+#include "utility.hpp"
+#include "connected_positions.hpp"
 
 struct SudokuField {
   SudokuField()
@@ -121,4 +121,4 @@ struct SudokuField {
   field_type field;
 };
 
-#endif //SUDOKU_SOLVER__SUDOKUFIELD_H_
+#endif //SUDOKU_SOLVER__SUDOKUFIELD_HPP_
