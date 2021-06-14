@@ -38,7 +38,7 @@ int main() {
 //    std::cout << "[ " << item.first << ", " << item.second << " ]\n";
 //  }
 //  return 0;
-  SudokuField field;
+  SudokuField<9> field;
   auto start_ts = std::chrono::system_clock::now();
   field.Parse(hardest_sudoku);
   if (field.solve()) {

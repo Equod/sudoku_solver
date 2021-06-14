@@ -44,8 +44,9 @@ static constexpr auto get_number = [](value_type n) {
   return BIT_COUNT(n) == 1 ? get_number_fast(n) : 0;
 };
 
+template<size_t SquareInRow>
 static constexpr auto get_square_index_by_pos = [](size_t pos_x, size_t pos_y) {
-  return pos_y / sudoku_squares_in_row * sudoku_squares_in_row + pos_x / sudoku_squares_in_row;
+  return pos_y / SquareInRow * SquareInRow + pos_x / SquareInRow;
 };
 
 #endif //SUDOKU_SOLVER__UTILITY_HPP_

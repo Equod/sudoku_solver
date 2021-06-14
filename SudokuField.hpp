@@ -11,15 +11,16 @@
 #include "utility.hpp"
 #include "connected_positions.hpp"
 
+template<size_t SudokuSize>
 struct SudokuField {
   SudokuField()
       : field(empty_field()) {
   }
   void InsertNumber(value_type n, size_t pos_x, size_t pos_y) {
     // set value
-    field[pos_y * sudoku_size + pos_x] = (1 << n);
-    for (const auto&[row, col] : connected_positions[pos_y * sudoku_size + pos_x]) {
-      const size_t pos = row * sudoku_size + col;
+    field[pos_y * SudokuSize + pos_x] = (1 << n);
+    for (const auto&[row, col] : connected_positions[pos_y * SudokuSize + pos_x]) {
+      const size_t pos = row * SudokuSize + col;
       if (BIT_COUNT(field[pos]) > 1) {
         CLEAR_VALUE(field[pos], n);
         // remove other if needed
@@ -31,20 +32,20 @@ struct SudokuField {
     }
   }
   void print_as_table() const {
-    for (int r = 0; r < sudoku_size; ++r) {
-      for (int c = 0; c < sudoku_size; ++c) {
-        if (auto n = get_number(field[r * sudoku_size + c]); n > 0) {
+    for (int r = 0; r < SudokuSize; ++r) {
+      for (int c = 0; c < SudokuSize; ++c) {
+        if (auto n = get_number(field[r * SudokuSize + c]); n > 0) {
           std::cout << n << " ";
         } else {
           std::cout << "  ";
         }
-        if (c % sudoku_squares_in_row == sudoku_squares_in_row - 1 && c < sudoku_size - 1) {
+        if (c % sudoku_squares_in_row == sudoku_squares_in_row - 1 && c < SudokuSize - 1) {
           std::cout << "| ";
         }
       }
-      if (r % sudoku_squares_in_row == sudoku_squares_in_row - 1 && r < sudoku_size - 1) {
+      if (r % sudoku_squares_in_row == sudoku_squares_in_row - 1 && r < SudokuSize - 1) {
         std::cout << "\n";
-        for (int i = 0; i < sudoku_size + sudoku_squares_in_row - 1; ++i) {
+        for (int i = 0; i < SudokuSize + sudoku_squares_in_row - 1; ++i) {
           std::cout << "--";
         }
       }
@@ -52,11 +53,11 @@ struct SudokuField {
     }
   }
   void print_binary() const {
-    for (size_t r = 0; r < sudoku_size; ++r) {
-      for (size_t c = 0; c < sudoku_size; ++c) {
-        size_t pos = r * sudoku_size + c;
+    for (size_t r = 0; r < SudokuSize; ++r) {
+      for (size_t c = 0; c < SudokuSize; ++c) {
+        size_t pos = r * SudokuSize + c;
         std::cout << "[" << r << " - " << c << "] "
-                  << std::bitset<sudoku_size>(field[pos] >> 1) << " " << get_number(field[pos]) << "\n";
+                  << std::bitset<SudokuSize>(field[pos] >> 1) << " " << get_number(field[pos]) << "\n";
       }
       std::cout << "\n";
     }
@@ -118,6 +119,7 @@ struct SudokuField {
     }
     return false;
   }
+  static constexpr auto connected_positions = get_connected_positions<SudokuSize>();
   field_type field;
 };
 
