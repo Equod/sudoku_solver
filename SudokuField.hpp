@@ -13,7 +13,7 @@
 
 template<size_t SudokuSize>
 struct SudokuField {
-  void InsertNumber(value_type n, size_t pos_x, size_t pos_y) {
+  void insert_number(value_type n, size_t pos_x, size_t pos_y) {
     // set value
     field[pos_y * SudokuSize + pos_x] = (1 << n);
 //    indirect_field[n - 1][pos_y] = 1 << (SudokuSize - 1 - pos_x);
@@ -26,7 +26,7 @@ struct SudokuField {
         // remove other if needed
         if (BIT_COUNT(field[pos]) == 1) {
           auto num = get_number_fast(field[pos]);
-          InsertNumber(num, col, row);
+          insert_number(num, col, row);
         }
       }
       // use indirect calculation
@@ -81,21 +81,21 @@ struct SudokuField {
     }
   }
   template<class ContainerType>
-  void ParseRow(const ContainerType& container, size_t row) {
+  void parse_row(const ContainerType& container, size_t row) {
     size_t count = 0;
     for (const auto& item : container) {
       if (item) {
-        InsertNumber(item, count, row);
+        insert_number(item, count, row);
       }
       ++count;
     }
   }
 
-  template<class ContainerType, class Type = value_type>
-  void Parse(const ContainerType& param) {
+  template<class ContainerType>
+  void parse(const ContainerType& param) {
     size_t count = 0;
     for (const auto& row : param) {
-      ParseRow(row, count++);
+      parse_row(row, count++);
     }
   }
   [[nodiscard]] bool is_solved() const {
@@ -128,7 +128,7 @@ struct SudokuField {
     for (int i = 1; i <= SudokuSize; ++i) {
       if (*min_it & (1 << i)) {
         auto copy = *this;
-        copy.InsertNumber(i, pos_x, pos_y);
+        copy.insert_number(i, pos_x, pos_y);
         if (copy.solve()) {
           *this = copy;
           return true;
