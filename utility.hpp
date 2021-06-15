@@ -18,8 +18,14 @@ static constexpr auto generate_array_of_value = []() {
 };
 
 template<size_t SudokuSize>
-static constexpr auto empty_field = []() {
-  return generate_array_of_value<(1 << (SudokuSize + 1)) - 2, SudokuSize * SudokuSize>();
+static constexpr auto get_empty_field = []() {
+  return generate_array_of_value<(1u << (SudokuSize + 1u)) - 2u, SudokuSize * SudokuSize>();
+};
+
+template<size_t SudokuSize>
+static constexpr auto get_indirect_empty_field = []() {
+  return generate_array_of_value_internal(generate_array_of_value<(1u << SudokuSize) - 1u, SudokuSize>(),
+                                          std::make_index_sequence<SudokuSize>{});
 };
 
 #define CLEAR_VALUE(n, pos) ((n) &= ~(1 << (pos)))

@@ -32,6 +32,20 @@ static constexpr auto sudoku2 = []() {
   };
 }();
 
+static constexpr auto indirect_example = []() {
+  return std::array{
+      std::array<value_type, 9>{ 1 },
+      std::array<value_type, 9>{ 0, 0, 0, 1 },
+      std::array<value_type, 9>{ 0 },
+      std::array<value_type, 9>{ 0, 0, 0, 0, 0, 0, 1 },
+      std::array<value_type, 9>{ 0 },
+      std::array<value_type, 9>{ 0 },
+      std::array<value_type, 9>{ 0, 0, 0, 0, 0, 0, 0, 1 },
+      std::array<value_type, 9>{ 0 },
+      std::array<value_type, 9>{ 0 }
+  };
+}();
+
 int main() {
 //  auto cp = connected_positions;
 //  for (const auto& item : cp[58]) {
@@ -41,6 +55,11 @@ int main() {
   SudokuField<9> field;
   auto start_ts = std::chrono::system_clock::now();
   field.Parse(hardest_sudoku);
+//  for (const auto & item : field.indirect_field[0]) {
+//    std::cout << std::bitset<9>(item) << "\n";
+//  }
+
+
   if (field.solve()) {
     auto end_ts = std::chrono::system_clock::now();
     field.print_as_table();

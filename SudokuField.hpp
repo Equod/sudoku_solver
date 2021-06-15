@@ -13,14 +13,14 @@
 
 template<size_t SudokuSize>
 struct SudokuField {
-  SudokuField()
-      : field(empty_field<SudokuSize>()) {
-  }
   void InsertNumber(value_type n, size_t pos_x, size_t pos_y) {
     // set value
     field[pos_y * SudokuSize + pos_x] = (1 << n);
+//    indirect_field[n - 1][pos_y] = 1 << (SudokuSize - 1 - pos_x);
+
     for (const auto&[row, col] : connected_positions[pos_y * SudokuSize + pos_x]) {
       const size_t pos = row * SudokuSize + col;
+      // use direct calculation
       if (BIT_COUNT(field[pos]) > 1) {
         CLEAR_VALUE(field[pos], n);
         // remove other if needed
@@ -29,7 +29,25 @@ struct SudokuField {
           InsertNumber(num, col, row);
         }
       }
+      // use indirect calculation
+//      if (BIT_COUNT(indirect_field[n - 1][row]) > 1) {
+//        CLEAR_VALUE(indirect_field[n - 1][row], SudokuSize - 1 - col);
+//        if (BIT_COUNT(indirect_field[n - 1][row]) == 1) {
+//          auto new_col = get_number_fast(indirect_field[n - 1][row]);
+//          InsertNumber(n, SudokuSize - 1 - new_col, row);
+//        }
+//      }
     }
+
+//    for (const auto&[row, col] : connected_positions[pos_y * SudokuSize + pos_x]) {
+//      if (BIT_COUNT(indirect_field[n - 1][row]) > 1) {
+//        CLEAR_VALUE(indirect_field[n - 1][row], SudokuSize - 1 - col);
+//        if (BIT_COUNT(indirect_field[n - 1][row]) == 1) {
+//          auto new_col = get_number_fast(indirect_field[n - 1][row]);
+//          InsertNumber(n, SudokuSize - 1 - new_col, row);
+//        }
+//      }
+//    }
   }
   void print_as_table() const {
     for (int r = 0; r < SudokuSize; ++r) {
@@ -122,7 +140,9 @@ struct SudokuField {
   static constexpr auto connected_positions = get_connected_positions<SudokuSize>();
   static constexpr size_t sudoku_squares_in_row = ct_sqrt(SudokuSize);
   using field_type = std::array<value_type, SudokuSize * SudokuSize>;
-  field_type field;
+  using indirect_field_type = std::array<std::array<value_type, SudokuSize>, SudokuSize>;
+  field_type field = get_empty_field<SudokuSize>();
+  indirect_field_type indirect_field = get_indirect_empty_field<SudokuSize>();
 };
 
 #endif //SUDOKU_SOLVER__SUDOKUFIELD_HPP_
